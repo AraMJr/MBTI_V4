@@ -11,6 +11,9 @@ class Function:
     def get_abbrev(self, fullname: str) -> str | None:
         return self.abbrevs.get(fullname)
 
+    def get_function(self, query: str) -> str | None:
+        return
+
     def get_opposite(self, query: str) -> str | None:
         abbrevs = list(self.attrs.keys())
         attrs = list(self.abbrevs.keys())

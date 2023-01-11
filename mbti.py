@@ -22,14 +22,20 @@ class MBTI:
         if self.functions is None:
             self.functions = {}
         v, p, j, o = tuple([*self.name])
-        self.functions['v'] = self.version.get_fullname(v)
-        self.functions['p'] = self.perceiving.get_fullname(p)
-        self.functions['j'] = self.judging.get_fullname(j)
-        self.functions['o'] = self.orientation.get_fullname(o)
+        self.functions['version'] = self.version.get_fullname(v)
+        self.functions['perceiving'] = self.perceiving.get_fullname(p)
+        self.functions['judging'] = self.judging.get_fullname(j)
+        self.functions['orientation'] = self.orientation.get_fullname(o)
 
     def generate_stack(self):
-        if self.stack is None:
-            self.stack = {}
+        orientation = self.functions.get('orientation')
+        version = self.functions.get('version')
+        top_e_function = self.functions.get(orientation) + 'e'
+        top_i_function = self.functions.get(self.orientation.get_opposite(orientation)) + 'i'
+        if version == 'introversion':
+            self.stack = {1: top_i_function, 2: top_e_function}
+        if version == 'extroversion':
+            self.stack = {1: top_e_function, 2: top_i_function}
 
 
 def mbti_type(name: str) -> MBTI | None:
