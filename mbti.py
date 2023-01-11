@@ -32,7 +32,6 @@ class MBTI:
             self.stack = {}
 
 
-
 def mbti_type(name: str) -> MBTI | None:
     if len(name) != 4:
         print('ERROR: INVALID TYPE (LEN NOT EQUAL TO 4)')
