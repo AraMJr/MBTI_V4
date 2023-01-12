@@ -1,8 +1,5 @@
-from parser import Parser
-
-
-def parse():
-    pass
+from text_ui.parser import Parser
+from mbti_logic.mbti import mbti_type, update_type
 
 
 def main():

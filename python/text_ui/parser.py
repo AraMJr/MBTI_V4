@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ui import UI, create_ui
+from text_ui.ui import UI, create_ui
 
 
 @dataclass
