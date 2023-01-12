@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from function import Function, function, Attribute
+from function import Function, function
 
 
 # this class contains all relevant the information on a type, including the function stack (and shadow), as well as

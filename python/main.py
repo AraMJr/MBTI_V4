@@ -1,4 +1,4 @@
-from ui import UI
+from parser import Parser
 
 
 def parse():
