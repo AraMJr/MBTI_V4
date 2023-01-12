@@ -20,7 +20,7 @@ class Attribute:
 @dataclass
 class Function:
     attrs: list[Attribute]
-    active: Attribute = None
+    active: Attribute | None = None
 
     # returns the abbreviations for all possible Attributes the Function can actively be
     def get_abbrevs(self) -> list[str]:
@@ -29,7 +29,7 @@ class Function:
             abbrevs.append(attr.abbrev)
         return abbrevs
 
-    def get_fullnames(self) -> list[str]:
+    def get_active_names(self) -> list[str]:
         fullnames = []
         for attr in self.attrs:
             fullnames.append(attr.fullname)

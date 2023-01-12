@@ -7,8 +7,8 @@ from function import Function, function, Attribute
 # must be activated manually. name is the only required argument.
 @dataclass
 class MBTI:
-    name: str
-    version: Function = function('introversion', 'i', 'extroversion', 'e')
+    name: str | None
+    version: Function = function('introverted', 'i', 'extroverted', 'e')
     perceiving: Function = function('intuition', 'n', 'sensing', 's')
     judging: Function = function('thinking', 't', 'feeling', 'f')
     orientation: Function = function('judging', 'j', 'perceiving', 'p')
@@ -16,12 +16,14 @@ class MBTI:
     shadow: dict = None
 
     def __str__(self):
-        return f"{self.name} -> {self.version.get_fullnames()} {self.perceiving.get_fullnames()} " \
-               f"{self.judging.get_fullnames()} {self.orientation.get_fullnames()}\n" \
-               f"{list(self.get_fullnames().values())}\n"
+        fullnames = list(self.get_fullnames().values())
+        return f"\n{self.name.upper()}\t->\t[ {self.version.active.fullname} {self.perceiving.active.fullname} " \
+               f"{self.judging.active.fullname} {self.orientation.active.fullname} ]\n" \
+               f"stack\t->\t[ {' > '.join(fullnames[:4])} ]\n" \
+               f"shadow\t->\t[ {' > '.join(fullnames[4:])} ]\n"
 
     # returns true if the inputted strings are all Attributes in their associated Functions, otherwise returns false
-    def validate(self, v: str=None, p: str=None, j: str=None, o: str=None) -> bool:
+    def validate(self, v: str = None, p: str = None, j: str = None, o: str = None) -> bool:
         def sub_validate(query: str, function: Function) -> None:
             if query is not None and query not in function.get_abbrevs():
                 raise Exception("ERROR: INVALID TYPE DETECTED")
@@ -77,8 +79,8 @@ class MBTI:
 
     # convert the stack from abbreviations to full function names using a reference key. can optionally not include the
     # shadow stack, but will include it by default
-    def get_fullnames(self, full: bool=True) -> dict:
-        def convert_abbrev(stack: dict, new_stack: dict={}) -> dict:
+    def get_fullnames(self, full: bool = True) -> dict:
+        def convert_abbrev(stack: dict, new_stack: dict = {}) -> dict:
             reference = {
                 'i': 'introverted',
                 'e': 'extroverted',
@@ -100,7 +102,7 @@ class MBTI:
 # change an mbti's type, and therefore stack using this. requires an instance of the mbti to change, and an optional
 # new name to base the change off of. can also be used to deactivate an mbti Functions if None or no name field is
 # passed in.
-def update_type(mbti: MBTI, name: str=None) -> MBTI | None:
+def update_type(mbti: MBTI, name: str = None) -> MBTI | None:
     mbti.name = name
     mbti.version.set_active(name)
     mbti.perceiving.set_active(name)
@@ -117,7 +119,7 @@ def update_type(mbti: MBTI, name: str=None) -> MBTI | None:
 
 # used to create an instance of a MBTI class. if no name is passed in, it will create a mbti with deactivated
 # functions and no stacks
-def mbti_type(name: str=None) -> MBTI | None:
+def mbti_type(name: str = None) -> MBTI | None:
     if name is None:
         mbti = MBTI(name=None)
         return mbti
