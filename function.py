@@ -1,48 +1,89 @@
+from dataclasses import dataclass
 
+
+# An Attribute is a subset of a Function, and has a name and abbreviation.
+@dataclass
+class Attribute:
+    abbrev: str
+    fullname: str
+
+    # returns true if a query is equal to either the abbreviation or fullname of the Attribute, otherwise returns false.
+    def match(self, query: str) -> bool:
+        if self.abbrev == query or self.fullname == query:
+            return True
+        return False
+
+
+# A Function acts as a variable which can only be certain Attributes, or None. The attrs are the Attributes it can be,
+# and the active is the Attribute it currently is. a Function being activated means that it now has a "value". A
+# deactivated Function (for all tense and purposes) returns None when asking for its value.
+@dataclass
 class Function:
+    attrs: list[Attribute]
+    active: Attribute = None
 
-    def __init__(self, attrs, abbrevs):
-        self.abbrevs: dict = abbrevs
-        self.attrs: dict = attrs
+    # returns the abbreviations for all possible Attributes the Function can actively be
+    def get_abbrevs(self) -> list[str]:
+        abbrevs = []
+        for attr in self.attrs:
+            abbrevs.append(attr.abbrev)
+        return abbrevs
 
-    def get_fullname(self, abbrev: str) -> str | None:
-        return self.attrs.get(abbrev)
+    def get_fullnames(self) -> list[str]:
+        fullnames = []
+        for attr in self.attrs:
+            fullnames.append(attr.fullname)
+        return fullnames
 
-    def get_abbrev(self, fullname: str) -> str | None:
-        return self.abbrevs.get(fullname)
-
-    def get_function(self, query: str) -> str | None:
-        return
-
-    def get_opposite(self, query: str) -> str | None:
-        abbrevs = list(self.attrs.keys())
-        attrs = list(self.abbrevs.keys())
-        if query == abbrevs[0]:
-            return abbrevs[1]
-        elif query == abbrevs[1]:
-            return abbrevs[0]
-        elif query == attrs[0]:
-            return attrs[1]
-        elif query == attrs[1]:
-            return attrs[0]
-        else:
+    # selects an Attribute from attrs to make active based on a match to a querry string argument.
+    # If no match is found, it returns None. if query is None, then it deactivates the Function and returns None.
+    # the Function can still be reactivated later.
+    def set_active(self, query: str = None) -> Attribute | None:
+        if query is None:
+            self.active = None
             return None
+        for attr in self.attrs:
+            if attr.match(query):
+                self.active = attr
+                return self.active
+
+    # returns the first Attribute in attrs that is not activated. best used when attrs has a length of 2, as it does in
+    # this program
+    def get_opposite(self) -> Attribute | None:
+        for attr in self.attrs:
+            if attr is not self.active:
+                return attr
+
+    # returns the first Attribute in attrs that does not match the inputted query. if None are found, returns None.
+    def find_opposite(self, query: str) -> Attribute | None:
+        for attr in self.attrs:
+            if not attr.match(query):
+                return attr
+
+    # sets the active Attribute to the opposite Attribute (first Attribute which is not the currently active Attribute).
+    def flip(self) -> Attribute | None:
+        self.active = self.get_opposite()
+        return self.active
 
 
-def instantiate(attribute1: str, abbrev1: str, attribute2: str, abbrev2: str) -> Function:
-    return Function(attrs={abbrev1: attribute1, abbrev2: attribute2},
-                    abbrevs={attribute1: abbrev1, attribute2: abbrev2})
+# used to instantiate an instance of the Function class. can optionally make an attribute active on initialization.
+def function(attribute1: str, abbrev1: str, attribute2: str, abbrev2: str, active: str = None) -> Function:
+    attrs = [Attribute(abbrev=abbrev1, fullname=attribute1), Attribute(abbrev=abbrev2, fullname=attribute2)]
+    for attr in attrs:
+        if active is not None and attr.match(active):
+            active = attr
+    return Function(
+        attrs=[Attribute(abbrev=abbrev1, fullname=attribute1), Attribute(abbrev=abbrev2, fullname=attribute2)],
+        active=active)
 
 
-if __name__ == '__main__':
-    judging: Function = instantiate('thinking', 't', 'feeling', 'f')
+if __name__ == "__main__":
+    judging = function("thinking", "t", "feeling", "f")
     print(judging)
-    print(judging.get_abbrev('thinking'))
-    print(judging.get_fullname('t'))
-    print(judging.get_opposite('t'))
-    print(judging.get_opposite('thinking'))
-    print(judging.get_opposite('intuition'))
-    print(judging.get_fullname('n'))
-
-
+    judging.set_active("thinking")
+    print(judging.active)
+    print(judging.get_opposite())
+    print(judging.find_opposite("t"))
+    judging.flip()
+    print(judging.active)
 
