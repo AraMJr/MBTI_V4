@@ -22,19 +22,21 @@ class MBTI:
                f"stack\t->\t[ {' > '.join(fullnames[:4])} ]\n" \
                f"shadow\t->\t[ {' > '.join(fullnames[4:])} ]\n"
 
+    def set_name(self, name) -> None:
+        self.name = name
+
+    def get_name(self) -> str:
+        return self.name
+
     # returns true if the inputted strings are all Attributes in their associated Functions, otherwise returns false
     def validate(self, v: str = None, p: str = None, j: str = None, o: str = None) -> bool:
-        def sub_validate(query: str, function: Function) -> None:
+        def sub_validate(query: str, function: Function) -> bool:
             if query is not None and query not in function.get_abbrevs():
-                raise Exception("ERROR: INVALID TYPE DETECTED")
-        try:
-            sub_validate(v, self.version)
-            sub_validate(p, self.perceiving)
-            sub_validate(j, self.judging)
-            sub_validate(o, self.orientation)
+                return False
             return True
-        except Exception("ERROR: INVALID TYPE DETECTED"):
-            return False
+
+        return sub_validate(v, self.version) and sub_validate(p, self.perceiving) and sub_validate(j, self.judging) \
+            and sub_validate(o, self.orientation)
 
     # activates all Functions according to the short name
     def activate(self) -> bool:
@@ -61,6 +63,7 @@ class MBTI:
             "e": {1: top_e_function, 2: top_i_function, 3: bottom_e_function, 4: bottom_i_function}
         }
         self.stack = stacks.get(self.version.active.abbrev)
+        self.shadow = stacks.get(self.version.get_opposite().abbrev)
         if self.stack is None:
             return False
         return True
@@ -73,7 +76,7 @@ class MBTI:
         current_version = self.version.active.abbrev
         for key, value in self.stack.items():
             current_version = self.version.find_opposite(current_version).abbrev
-            shadow[key+4] = value[:-1] + current_version
+            shadow[key + 4] = value[:-1] + current_version
         self.shadow = shadow
         return True
 
@@ -87,12 +90,15 @@ class MBTI:
                 'n': 'intuition',
                 's': 'sensing',
                 't': 'thinking',
-                'f': 'feeling'
-                }
+                'f': 'feeling',
+                'p': 'perceiving',
+                'j': 'judging'
+            }
             for key, function in stack.items():
                 f, v = tuple([*function])
                 new_stack[key] = f"{reference.get(v)} {reference.get(f)}"
             return new_stack
+
         full_stack = convert_abbrev(self.stack)
         if full:
             return convert_abbrev(self.shadow, full_stack)
@@ -103,18 +109,19 @@ class MBTI:
 # new name to base the change off of. can also be used to deactivate an mbti Functions if None or no name field is
 # passed in.
 def update_type(mbti: MBTI, name: str = None) -> MBTI | None:
-    mbti.name = name
-    mbti.version.set_active(name)
-    mbti.perceiving.set_active(name)
-    mbti.judging.set_active(name)
-    mbti.orientation.set_active(name)
+    cached_mbti: MBTI = mbti
+    mbti.set_name(name)
+    mbti.version.set_active(None)
+    mbti.perceiving.set_active(None)
+    mbti.judging.set_active(None)
+    mbti.orientation.set_active(None)
     if name is None:
         mbti.stack = None
         mbti.shadow = None
         return mbti
     if mbti.activate() and mbti.generate_stack() and mbti.generate_shadow():
         return mbti
-    return None
+    return cached_mbti
 
 
 # used to create an instance of a MBTI class. if no name is passed in, it will create a mbti with deactivated
@@ -133,8 +140,12 @@ def mbti_type(name: str = None) -> MBTI | None:
 
 
 if __name__ == "__main__":
+    def print_type(type: MBTI) -> None:
+        if type is not None:
+            print(type)
     intp = mbti_type('intp')
-    if intp is not None:
-        print(intp)
-
-
+    print_type(intp)
+    update_type(intp, "esfp")
+    print_type(intp)
+    update_type(intp, "abcd")
+    print_type(intp)

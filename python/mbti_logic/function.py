@@ -47,6 +47,10 @@ class Function:
                 self.active = attr
                 return self.active
 
+    # deactivates current function. Can still be reactivated later
+    def deactivate(self) -> None:
+        self.active = None
+
     # returns the first Attribute in attrs that is not activated. best used when attrs has a length of 2, as it does in
     # this program
     def get_opposite(self) -> Attribute | None:
@@ -86,5 +90,7 @@ if __name__ == "__main__":
     print(judging.get_opposite())
     print(judging.find_opposite("t"))
     judging.flip()
+    print(judging.active)
+    judging.deactivate()
     print(judging.active)
 
