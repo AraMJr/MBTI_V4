@@ -1,4 +1,4 @@
-from server.parser import Parser
+# from server.parser import Parser
 from mbti_logic.mbti import mbti_type, update_type
 
 

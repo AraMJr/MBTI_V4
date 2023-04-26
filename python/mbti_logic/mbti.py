@@ -8,10 +8,10 @@ from mbti_logic.function import Function, function
 @dataclass
 class MBTI:
     name: str | None
-    version: Function = function('introverted', 'i', 'extroverted', 'e')
-    perceiving: Function = function('intuition', 'n', 'sensing', 's')
-    judging: Function = function('thinking', 't', 'feeling', 'f')
-    orientation: Function = function('judging', 'j', 'perceiving', 'p')
+    version: Function = function('introverted', 'extroverted', 'i', 'e')
+    perceiving: Function = function('intuition', 'sensing', 'n', 's')
+    judging: Function = function('thinking', 'feeling', 't', 'f')
+    orientation: Function = function('judging', 'perceiving', 'j', 'p')
     stack: dict = None
     shadow: dict = None
 

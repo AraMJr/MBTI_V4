@@ -9,7 +9,7 @@ class Attribute:
 
     # returns true if a query is equal to either the abbreviation or fullname of the Attribute, otherwise returns false.
     def match(self, query: str) -> bool:
-        if self.abbrev == query or self.fullname == query:
+        if self.fullname == query or (self.abbrev == query and self.abbrev is not None):
             return True
         return False
 
@@ -29,13 +29,13 @@ class Function:
             abbrevs.append(attr.abbrev)
         return abbrevs
 
-    def get_active_names(self) -> list[str]:
+    def get_full_names(self) -> list[str]:
         fullnames = []
         for attr in self.attrs:
             fullnames.append(attr.fullname)
         return fullnames
 
-    # selects an Attribute from attrs to make active based on a match to a querry string argument.
+    # selects an Attribute from attrs to make active based on a match to a query string argument.
     # If no match is found, it returns None. if query is None, then it deactivates the Function and returns None.
     # the Function can still be reactivated later.
     def set_active(self, query: str = None) -> Attribute | None:
@@ -67,7 +67,8 @@ class Function:
 
 
 # used to instantiate an instance of the Function class. can optionally make an attribute active on initialization.
-def function(attribute1: str, abbrev1: str, attribute2: str, abbrev2: str, active: str = None) -> Function:
+def function(attribute1: str, attribute2: str, abbrev1: str = None, abbrev2: str = None, active: str = None) \
+        -> Function:
     attrs = [Attribute(abbrev=abbrev1, fullname=attribute1), Attribute(abbrev=abbrev2, fullname=attribute2)]
     for attr in attrs:
         if active is not None and attr.match(active):
@@ -78,7 +79,7 @@ def function(attribute1: str, abbrev1: str, attribute2: str, abbrev2: str, activ
 
 
 if __name__ == "__main__":
-    judging = function("thinking", "t", "feeling", "f")
+    judging = function("thinking", "feeling", "t", "f")
     print(judging)
     judging.set_active("thinking")
     print(judging.active)
