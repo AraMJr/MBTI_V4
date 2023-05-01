@@ -1,5 +1,5 @@
 # from server.parser import Parser
-from mbti_logic.mbti import mbti_type, update_type
+from mbti_logic.mbti_old import mbti_type, update_type
 
 
 def main():
